@@ -1634,48 +1634,148 @@ def render_html_content(
         <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" integrity="sha512-BNaRQnYJYiPSqHHDb58B0yaPfCu+Wgds8Gp/gU33kqBtgNS4tSPHuGibyoeqMV/TJlSKda6FXzoEyYGjTe+vXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         <style>
             * { box-sizing: border-box; }
+            
+            :root {
+                --bg-primary: #ffffff;
+                --bg-secondary: #fafafa;
+                --bg-tertiary: #f8f9fa;
+                --text-primary: #1a1a1a;
+                --text-secondary: #666666;
+                --text-tertiary: #999999;
+                --border-color: #e5e7eb;
+                --border-light: #f0f0f0;
+                --gradient-start: #4f46e5;
+                --gradient-end: #7c3aed;
+                --accent-color: #4f46e5;
+                --shadow: 0 2px 16px rgba(0,0,0,0.06);
+            }
+            
+            [data-theme="dark"] {
+                --bg-primary: #1a1a1a;
+                --bg-secondary: #0f0f0f;
+                --bg-tertiary: #2a2a2a;
+                --text-primary: #e5e5e5;
+                --text-secondary: #a0a0a0;
+                --text-tertiary: #707070;
+                --border-color: #333333;
+                --border-light: #2a2a2a;
+                --gradient-start: #6366f1;
+                --gradient-end: #8b5cf6;
+                --accent-color: #6366f1;
+                --shadow: 0 2px 16px rgba(0,0,0,0.3);
+            }
+            
+            [data-theme="green"] {
+                --bg-primary: #ffffff;
+                --bg-secondary: #f0fdf4;
+                --bg-tertiary: #f7fee7;
+                --text-primary: #14532d;
+                --text-secondary: #166534;
+                --text-tertiary: #4d7c0f;
+                --border-color: #bbf7d0;
+                --border-light: #dcfce7;
+                --gradient-start: #16a34a;
+                --gradient-end: #84cc16;
+                --accent-color: #16a34a;
+                --shadow: 0 2px 16px rgba(22,163,74,0.1);
+            }
+            
+            [data-theme="blue"] {
+                --bg-primary: #ffffff;
+                --bg-secondary: #eff6ff;
+                --bg-tertiary: #dbeafe;
+                --text-primary: #1e3a8a;
+                --text-secondary: #1e40af;
+                --text-tertiary: #3b82f6;
+                --border-color: #93c5fd;
+                --border-light: #bfdbfe;
+                --gradient-start: #2563eb;
+                --gradient-end: #0ea5e9;
+                --accent-color: #2563eb;
+                --shadow: 0 2px 16px rgba(37,99,235,0.1);
+            }
+            
             body { 
                 font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
                 margin: 0; 
                 padding: 16px; 
-                background: #fafafa;
-                color: #333;
+                background: var(--bg-secondary);
+                color: var(--text-primary);
                 line-height: 1.5;
+                transition: background-color 0.3s ease, color 0.3s ease;
             }
             
             .container {
                 max-width: 600px;
                 margin: 0 auto;
-                background: white;
+                background: var(--bg-primary);
                 border-radius: 12px;
                 overflow: hidden;
-                box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+                box-shadow: var(--shadow);
+                transition: background-color 0.3s ease, box-shadow 0.3s ease;
             }
             
             .header {
-                background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+                background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%);
                 color: white;
-                padding: 32px 24px;
+                padding: 24px 20px;
                 text-align: center;
                 position: relative;
             }
             
-            .save-buttons {
+            .header-actions {
                 position: absolute;
-                top: 16px;
-                right: 16px;
+                top: 12px;
+                right: 12px;
                 display: flex;
-                gap: 8px;
+                gap: 6px;
+                align-items: center;
+            }
+            
+            .theme-switcher {
+                background: rgba(255, 255, 255, 0.2);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 6px;
+                padding: 0;
+                display: flex;
+                overflow: hidden;
+                backdrop-filter: blur(10px);
+            }
+            
+            .theme-btn {
+                background: transparent;
+                border: none;
+                color: white;
+                padding: 6px 10px;
+                cursor: pointer;
+                font-size: 11px;
+                font-weight: 500;
+                transition: background-color 0.2s ease;
+                white-space: nowrap;
+            }
+            
+            .theme-btn:hover {
+                background: rgba(255, 255, 255, 0.1);
+            }
+            
+            .theme-btn.active {
+                background: rgba(255, 255, 255, 0.3);
+                font-weight: 600;
+            }
+            
+            .save-buttons {
+                display: flex;
+                gap: 6px;
             }
             
             .save-btn {
                 background: rgba(255, 255, 255, 0.2);
                 border: 1px solid rgba(255, 255, 255, 0.3);
                 color: white;
-                padding: 8px 16px;
+                padding: 6px 12px;
                 border-radius: 6px;
                 cursor: pointer;
-                font-size: 13px;
+                font-size: 12px;
                 font-weight: 500;
                 transition: all 0.2s ease;
                 backdrop-filter: blur(10px);
@@ -1698,16 +1798,16 @@ def render_html_content(
             }
             
             .header-title {
-                font-size: 22px;
+                font-size: 20px;
                 font-weight: 700;
-                margin: 0 0 20px 0;
+                margin: 0 0 16px 0;
             }
             
             .header-info {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
-                gap: 16px;
-                font-size: 14px;
+                gap: 12px;
+                font-size: 13px;
                 opacity: 0.95;
             }
             
@@ -1717,22 +1817,22 @@ def render_html_content(
             
             .info-label {
                 display: block;
-                font-size: 12px;
+                font-size: 11px;
                 opacity: 0.8;
-                margin-bottom: 4px;
+                margin-bottom: 3px;
             }
             
             .info-value {
                 font-weight: 600;
-                font-size: 16px;
+                font-size: 15px;
             }
             
             .content {
-                padding: 24px;
+                padding: 20px;
             }
             
             .word-group {
-                margin-bottom: 40px;
+                margin-bottom: 28px;
             }
             
             .word-group:first-child {
@@ -1743,26 +1843,26 @@ def render_html_content(
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                margin-bottom: 20px;
-                padding-bottom: 8px;
-                border-bottom: 1px solid #f0f0f0;
+                margin-bottom: 12px;
+                padding-bottom: 6px;
+                border-bottom: 1px solid var(--border-light);
             }
             
             .word-info {
                 display: flex;
                 align-items: center;
-                gap: 12px;
+                gap: 10px;
             }
             
             .word-name {
-                font-size: 17px;
+                font-size: 16px;
                 font-weight: 600;
-                color: #1a1a1a;
+                color: var(--text-primary);
             }
             
             .word-count {
-                color: #666;
-                font-size: 13px;
+                color: var(--text-secondary);
+                font-size: 12px;
                 font-weight: 500;
             }
             
@@ -1770,88 +1870,88 @@ def render_html_content(
             .word-count.warm { color: #ea580c; font-weight: 600; }
             
             .word-index {
-                color: #999;
-                font-size: 12px;
+                color: var(--text-tertiary);
+                font-size: 11px;
             }
             
             .news-item {
-                margin-bottom: 20px;
-                padding: 16px 0;
-                border-bottom: 1px solid #f5f5f5;
+                margin-bottom: 12px;
+                padding: 10px 0;
+                border-bottom: 1px solid var(--border-light);
                 position: relative;
                 display: flex;
-                gap: 12px;
-                align-items: center;
+                gap: 10px;
+                align-items: flex-start;
             }
             
             .news-item:last-child {
                 border-bottom: none;
+                margin-bottom: 0;
             }
             
             .news-item.new::after {
                 content: "NEW";
                 position: absolute;
-                top: 12px;
+                top: 8px;
                 right: 0;
                 background: #fbbf24;
                 color: #92400e;
                 font-size: 9px;
                 font-weight: 700;
-                padding: 3px 6px;
-                border-radius: 4px;
+                padding: 2px 5px;
+                border-radius: 3px;
                 letter-spacing: 0.5px;
             }
             
             .news-number {
-                color: #999;
-                font-size: 13px;
+                color: var(--text-tertiary);
+                font-size: 12px;
                 font-weight: 600;
                 min-width: 20px;
                 text-align: center;
                 flex-shrink: 0;
-                background: #f8f9fa;
+                background: var(--bg-tertiary);
                 border-radius: 50%;
-                width: 24px;
-                height: 24px;
+                width: 22px;
+                height: 22px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                align-self: flex-start;
-                margin-top: 8px;
+                margin-top: 2px;
             }
             
             .news-content {
                 flex: 1;
                 min-width: 0;
-                padding-right: 40px;
+                padding-right: 35px;
             }
             
             .news-item.new .news-content {
-                padding-right: 50px;
+                padding-right: 45px;
             }
             
             .news-header {
                 display: flex;
                 align-items: center;
-                gap: 8px;
-                margin-bottom: 8px;
+                gap: 6px;
+                margin-bottom: 6px;
                 flex-wrap: wrap;
             }
             
             .source-name {
-                color: #666;
-                font-size: 12px;
+                color: var(--text-secondary);
+                font-size: 11px;
                 font-weight: 500;
             }
             
             .rank-num {
                 color: #fff;
                 background: #6b7280;
-                font-size: 10px;
+                font-size: 9px;
                 font-weight: 700;
-                padding: 2px 6px;
-                border-radius: 10px;
-                min-width: 18px;
+                padding: 2px 5px;
+                border-radius: 8px;
+                min-width: 16px;
                 text-align: center;
             }
             
@@ -1859,25 +1959,25 @@ def render_html_content(
             .rank-num.high { background: #ea580c; }
             
             .time-info {
-                color: #999;
-                font-size: 11px;
+                color: var(--text-tertiary);
+                font-size: 10px;
             }
             
             .count-info {
                 color: #059669;
-                font-size: 11px;
+                font-size: 10px;
                 font-weight: 500;
             }
             
             .news-title {
-                font-size: 15px;
+                font-size: 14px;
                 line-height: 1.4;
-                color: #1a1a1a;
+                color: var(--text-primary);
                 margin: 0;
             }
             
             .news-link {
-                color: #2563eb;
+                color: var(--accent-color);
                 text-decoration: none;
             }
             
@@ -1890,37 +1990,37 @@ def render_html_content(
             }
             
             .new-section {
-                margin-top: 40px;
-                padding-top: 24px;
-                border-top: 2px solid #f0f0f0;
+                margin-top: 32px;
+                padding-top: 20px;
+                border-top: 2px solid var(--border-color);
             }
             
             .new-section-title {
-                color: #1a1a1a;
-                font-size: 16px;
+                color: var(--text-primary);
+                font-size: 15px;
                 font-weight: 600;
-                margin: 0 0 20px 0;
+                margin: 0 0 16px 0;
             }
             
             .new-source-group {
-                margin-bottom: 24px;
+                margin-bottom: 20px;
             }
             
             .new-source-title {
-                color: #666;
-                font-size: 13px;
+                color: var(--text-secondary);
+                font-size: 12px;
                 font-weight: 500;
-                margin: 0 0 12px 0;
-                padding-bottom: 6px;
-                border-bottom: 1px solid #f5f5f5;
+                margin: 0 0 10px 0;
+                padding-bottom: 5px;
+                border-bottom: 1px solid var(--border-light);
             }
             
             .new-item {
                 display: flex;
                 align-items: center;
-                gap: 12px;
-                padding: 8px 0;
-                border-bottom: 1px solid #f9f9f9;
+                gap: 10px;
+                padding: 6px 0;
+                border-bottom: 1px solid var(--border-light);
             }
             
             .new-item:last-child {
@@ -1928,13 +2028,13 @@ def render_html_content(
             }
             
             .new-item-number {
-                color: #999;
-                font-size: 12px;
+                color: var(--text-tertiary);
+                font-size: 11px;
                 font-weight: 600;
                 min-width: 18px;
                 text-align: center;
                 flex-shrink: 0;
-                background: #f8f9fa;
+                background: var(--bg-tertiary);
                 border-radius: 50%;
                 width: 20px;
                 height: 20px;
@@ -1946,11 +2046,11 @@ def render_html_content(
             .new-item-rank {
                 color: #fff;
                 background: #6b7280;
-                font-size: 10px;
+                font-size: 9px;
                 font-weight: 700;
-                padding: 3px 6px;
-                border-radius: 8px;
-                min-width: 20px;
+                padding: 2px 5px;
+                border-radius: 6px;
+                min-width: 18px;
                 text-align: center;
                 flex-shrink: 0;
             }
@@ -1964,9 +2064,9 @@ def render_html_content(
             }
             
             .new-item-title {
-                font-size: 14px;
+                font-size: 13px;
                 line-height: 1.4;
-                color: #1a1a1a;
+                color: var(--text-primary);
                 margin: 0;
             }
             
@@ -1974,15 +2074,20 @@ def render_html_content(
                 background: #fef2f2;
                 border: 1px solid #fecaca;
                 border-radius: 8px;
-                padding: 16px;
-                margin-bottom: 24px;
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+            
+            [data-theme="dark"] .error-section {
+                background: #2a1a1a;
+                border-color: #4a2020;
             }
             
             .error-title {
                 color: #dc2626;
-                font-size: 14px;
+                font-size: 13px;
                 font-weight: 600;
-                margin: 0 0 8px 0;
+                margin: 0 0 6px 0;
             }
             
             .error-list {
@@ -1993,64 +2098,75 @@ def render_html_content(
             
             .error-item {
                 color: #991b1b;
-                font-size: 13px;
+                font-size: 12px;
                 padding: 2px 0;
                 font-family: 'SF Mono', Consolas, monospace;
             }
             
+            [data-theme="dark"] .error-item {
+                color: #fca5a5;
+            }
+            
             .footer {
-                margin-top: 32px;
-                padding: 20px 24px;
-                background: #f8f9fa;
-                border-top: 1px solid #e5e7eb;
+                margin-top: 28px;
+                padding: 16px 20px;
+                background: var(--bg-tertiary);
+                border-top: 1px solid var(--border-color);
                 text-align: center;
             }
             
             .footer-content {
-                font-size: 13px;
-                color: #6b7280;
+                font-size: 12px;
+                color: var(--text-secondary);
                 line-height: 1.6;
             }
             
             .footer-link {
-                color: #4f46e5;
+                color: var(--accent-color);
                 text-decoration: none;
                 font-weight: 500;
                 transition: color 0.2s ease;
             }
             
             .footer-link:hover {
-                color: #7c3aed;
                 text-decoration: underline;
             }
             
             .project-name {
                 font-weight: 600;
-                color: #374151;
+                color: var(--text-primary);
             }
             
             @media (max-width: 480px) {
                 body { padding: 12px; }
-                .header { padding: 24px 20px; }
-                .content { padding: 20px; }
-                .footer { padding: 16px 20px; }
-                .header-info { grid-template-columns: 1fr; gap: 12px; }
-                .news-header { gap: 6px; }
-                .news-content { padding-right: 45px; }
-                .news-item { gap: 8px; }
-                .new-item { gap: 8px; }
-                .news-number { width: 20px; height: 20px; font-size: 12px; }
-                .save-buttons {
+                .header { padding: 20px 16px; }
+                .content { padding: 16px; }
+                .footer { padding: 14px 16px; }
+                .header-info { grid-template-columns: 1fr; gap: 10px; }
+                .news-header { gap: 5px; }
+                .news-content { padding-right: 40px; }
+                .news-item { gap: 8px; padding: 8px 0; margin-bottom: 10px; }
+                .new-item { gap: 8px; padding: 5px 0; }
+                .news-number { width: 20px; height: 20px; font-size: 11px; }
+                .word-group { margin-bottom: 24px; }
+                .header-actions {
                     position: static;
-                    margin-bottom: 16px;
+                    margin-bottom: 14px;
                     display: flex;
-                    gap: 8px;
+                    gap: 6px;
                     justify-content: center;
                     flex-direction: column;
                     width: 100%;
                 }
-                .save-btn {
+                .theme-switcher,
+                .save-buttons {
                     width: 100%;
+                }
+                .save-btn {
+                    flex: 1;
+                }
+                .theme-btn {
+                    flex: 1;
                 }
             }
         </style>
@@ -2058,9 +2174,17 @@ def render_html_content(
     <body>
         <div class="container">
             <div class="header">
-                <div class="save-buttons">
-                    <button class="save-btn" onclick="saveAsImage()">保存为图片</button>
-                    <button class="save-btn" onclick="saveAsMultipleImages()">分段保存</button>
+                <div class="header-actions">
+                    <div class="theme-switcher">
+                        <button class="theme-btn active" data-theme="light" onclick="switchTheme('light')">默认</button>
+                        <button class="theme-btn" data-theme="dark" onclick="switchTheme('dark')">暗色</button>
+                        <button class="theme-btn" data-theme="green" onclick="switchTheme('green')">绿色</button>
+                        <button class="theme-btn" data-theme="blue" onclick="switchTheme('blue')">蓝色</button>
+                    </div>
+                    <div class="save-buttons">
+                        <button class="save-btn" onclick="saveAsImage()">保存图片</button>
+                        <button class="save-btn" onclick="saveAsMultipleImages()">分段保存</button>
+                    </div>
                 </div>
                 <div class="header-title">热点新闻分析</div>
                 <div class="header-info">
@@ -2153,7 +2277,7 @@ def render_html_content(
                         <div class="word-index">{i}/{total_count}</div>
                     </div>"""
 
-            # 处理每个词组下的新闻标题，给每条新闻标上序号
+            # 处理每个词组下的新闻标题
             for j, title_data in enumerate(stat["titles"], 1):
                 is_new = title_data.get("is_new", False)
                 new_class = "new" if is_new else ""
@@ -2190,7 +2314,6 @@ def render_html_content(
                 # 处理时间显示
                 time_display = title_data.get("time_display", "")
                 if time_display:
-                    # 简化时间显示格式，将波浪线替换为~
                     simplified_time = (
                         time_display.replace(" ~ ", "~")
                         .replace("[", "")
@@ -2241,7 +2364,6 @@ def render_html_content(
                     <div class="new-source-group">
                         <div class="new-source-title">{escaped_source} · {titles_count}条</div>"""
 
-            # 为新增新闻也添加序号
             for idx, title_data in enumerate(source_data["titles"], 1):
                 ranks = title_data.get("ranks", [])
 
@@ -2312,6 +2434,27 @@ def render_html_content(
         </div>
         
         <script>
+            // 主题切换功能
+            function switchTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('preferred-theme', theme);
+                
+                // 更新按钮状态
+                document.querySelectorAll('.theme-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                    if (btn.getAttribute('data-theme') === theme) {
+                        btn.classList.add('active');
+                    }
+                });
+            }
+            
+            // 页面加载时恢复主题
+            document.addEventListener('DOMContentLoaded', function() {
+                const savedTheme = localStorage.getItem('preferred-theme') || 'light';
+                switchTheme(savedTheme);
+                window.scrollTo(0, 0);
+            });
+            
             async function saveAsImage() {
                 const button = event.target;
                 const originalText = button.textContent;
@@ -2321,20 +2464,17 @@ def render_html_content(
                     button.disabled = true;
                     window.scrollTo(0, 0);
                     
-                    // 等待页面稳定
                     await new Promise(resolve => setTimeout(resolve, 200));
                     
-                    // 截图前隐藏按钮
-                    const buttons = document.querySelector('.save-buttons');
-                    buttons.style.visibility = 'hidden';
+                    const actions = document.querySelector('.header-actions');
+                    actions.style.visibility = 'hidden';
                     
-                    // 再次等待确保按钮完全隐藏
                     await new Promise(resolve => setTimeout(resolve, 100));
                     
                     const container = document.querySelector('.container');
                     
                     const canvas = await html2canvas(container, {
-                        backgroundColor: '#ffffff',
+                        backgroundColor: getComputedStyle(container).backgroundColor,
                         scale: 1.5,
                         useCORS: true,
                         allowTaint: false,
@@ -2352,7 +2492,7 @@ def render_html_content(
                         windowHeight: window.innerHeight
                     });
                     
-                    buttons.style.visibility = 'visible';
+                    actions.style.visibility = 'visible';
                     
                     const link = document.createElement('a');
                     const now = new Date();
@@ -2361,7 +2501,6 @@ def render_html_content(
                     link.download = filename;
                     link.href = canvas.toDataURL('image/png', 1.0);
                     
-                    // 触发下载
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
@@ -2373,8 +2512,8 @@ def render_html_content(
                     }, 2000);
                     
                 } catch (error) {
-                    const buttons = document.querySelector('.save-buttons');
-                    buttons.style.visibility = 'visible';
+                    const actions = document.querySelector('.header-actions');
+                    actions.style.visibility = 'visible';
                     button.textContent = '保存失败';
                     setTimeout(() => {
                         button.textContent = originalText;
@@ -2394,7 +2533,6 @@ def render_html_content(
                     button.textContent = '分析中...';
                     button.disabled = true;
                     
-                    // 获取所有可能的分割元素
                     const newsItems = Array.from(container.querySelectorAll('.news-item'));
                     const wordGroups = Array.from(container.querySelectorAll('.word-group'));
                     const newSection = container.querySelector('.new-section');
@@ -2402,11 +2540,9 @@ def render_html_content(
                     const header = container.querySelector('.header');
                     const footer = container.querySelector('.footer');
                     
-                    // 计算元素位置和高度
                     const containerRect = container.getBoundingClientRect();
                     const elements = [];
                     
-                    // 添加header作为必须包含的元素
                     elements.push({
                         type: 'header',
                         element: header,
@@ -2415,7 +2551,6 @@ def render_html_content(
                         height: header.offsetHeight
                     });
                     
-                    // 添加错误信息（如果存在）
                     if (errorSection) {
                         const rect = errorSection.getBoundingClientRect();
                         elements.push({
@@ -2427,12 +2562,10 @@ def render_html_content(
                         });
                     }
                     
-                    // 按word-group分组处理news-item
                     wordGroups.forEach(group => {
                         const groupRect = group.getBoundingClientRect();
                         const groupNewsItems = group.querySelectorAll('.news-item');
                         
-                        // 添加word-group的header部分
                         const wordHeader = group.querySelector('.word-header');
                         if (wordHeader) {
                             const headerRect = wordHeader.getBoundingClientRect();
@@ -2446,7 +2579,6 @@ def render_html_content(
                             });
                         }
                         
-                        // 添加每个news-item
                         groupNewsItems.forEach(item => {
                             const rect = item.getBoundingClientRect();
                             elements.push({
@@ -2460,7 +2592,6 @@ def render_html_content(
                         });
                     });
                     
-                    // 添加新增新闻部分
                     if (newSection) {
                         const rect = newSection.getBoundingClientRect();
                         elements.push({
@@ -2472,7 +2603,6 @@ def render_html_content(
                         });
                     }
                     
-                    // 添加footer
                     const footerRect = footer.getBoundingClientRect();
                     elements.push({
                         type: 'footer',
@@ -2482,7 +2612,6 @@ def render_html_content(
                         height: footer.offsetHeight
                     });
                     
-                    // 计算分割点
                     const segments = [];
                     let currentSegment = { start: 0, end: 0, height: 0, includeHeader: true };
                     let headerHeight = header.offsetHeight;
@@ -2492,13 +2621,10 @@ def render_html_content(
                         const element = elements[i];
                         const potentialHeight = element.bottom - currentSegment.start;
                         
-                        // 检查是否需要创建新分段
                         if (potentialHeight > maxHeight && currentSegment.height > headerHeight) {
-                            // 在前一个元素结束处分割
                             currentSegment.end = elements[i - 1].bottom;
                             segments.push(currentSegment);
                             
-                            // 开始新分段
                             currentSegment = {
                                 start: currentSegment.end,
                                 end: 0,
@@ -2511,7 +2637,6 @@ def render_html_content(
                         }
                     }
                     
-                    // 添加最后一个分段
                     if (currentSegment.height > 0) {
                         currentSegment.end = container.offsetHeight;
                         segments.push(currentSegment);
@@ -2519,45 +2644,40 @@ def render_html_content(
                     
                     button.textContent = `生成中 (0/${segments.length})...`;
                     
-                    // 隐藏保存按钮
-                    const buttons = document.querySelector('.save-buttons');
-                    buttons.style.visibility = 'hidden';
+                    const actions = document.querySelector('.header-actions');
+                    actions.style.visibility = 'hidden';
                     
-                    // 为每个分段生成图片
                     const images = [];
+                    const bgColor = getComputedStyle(container).backgroundColor;
+                    
                     for (let i = 0; i < segments.length; i++) {
                         const segment = segments[i];
                         button.textContent = `生成中 (${i + 1}/${segments.length})...`;
                         
-                        // 创建临时容器用于截图
                         const tempContainer = document.createElement('div');
                         tempContainer.style.cssText = `
                             position: absolute;
                             left: -9999px;
                             top: 0;
                             width: ${container.offsetWidth}px;
-                            background: white;
+                            background: ${bgColor};
                         `;
                         tempContainer.className = 'container';
                         
-                        // 克隆容器内容
                         const clonedContainer = container.cloneNode(true);
                         
-                        // 移除克隆内容中的保存按钮
-                        const clonedButtons = clonedContainer.querySelector('.save-buttons');
-                        if (clonedButtons) {
-                            clonedButtons.style.display = 'none';
+                        const clonedActions = clonedContainer.querySelector('.header-actions');
+                        if (clonedActions) {
+                            clonedActions.style.display = 'none';
                         }
                         
                         tempContainer.appendChild(clonedContainer);
                         document.body.appendChild(tempContainer);
                         
-                        // 等待DOM更新
                         await new Promise(resolve => setTimeout(resolve, 100));
                         
-                        // 使用html2canvas截取特定区域
                         const canvas = await html2canvas(clonedContainer, {
-                            backgroundColor: '#ffffff',
+                            backgroundColor: bgColor,
                             scale: scale,
                             useCORS: true,
                             allowTaint: false,
@@ -2573,14 +2693,11 @@ def render_html_content(
                         
                         images.push(canvas.toDataURL('image/png', 1.0));
                         
-                        // 清理临时容器
                         document.body.removeChild(tempContainer);
                     }
                     
-                    // 恢复按钮显示
-                    buttons.style.visibility = 'visible';
+                    actions.style.visibility = 'visible';
                     
-                    // 下载所有图片
                     const now = new Date();
                     const baseFilename = `TrendRadar_热点新闻分析_${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
                     
@@ -2592,7 +2709,6 @@ def render_html_content(
                         link.click();
                         document.body.removeChild(link);
                         
-                        // 延迟一下避免浏览器阻止多个下载
                         await new Promise(resolve => setTimeout(resolve, 100));
                     }
                     
@@ -2604,8 +2720,8 @@ def render_html_content(
                     
                 } catch (error) {
                     console.error('分段保存失败:', error);
-                    const buttons = document.querySelector('.save-buttons');
-                    buttons.style.visibility = 'visible';
+                    const actions = document.querySelector('.header-actions');
+                    actions.style.visibility = 'visible';
                     button.textContent = '保存失败';
                     setTimeout(() => {
                         button.textContent = originalText;
@@ -2613,10 +2729,6 @@ def render_html_content(
                     }, 2000);
                 }
             }
-            
-            document.addEventListener('DOMContentLoaded', function() {
-                window.scrollTo(0, 0);
-            });
         </script>
     </body>
     </html>
